@@ -287,7 +287,9 @@ Flotr.Graph = Class.create({
         explode: 6,
         sizeRatio: 0.6,
         startAngle: Math.PI/4,
-        labelFormatter: Flotr.defaultPieLabelFormatter
+        labelFormatter: Flotr.defaultPieLabelFormatter,
+        viewAngle: (Math.PI/2 * 0.6),
+        spliceThickness: 20
       },
       grid: {
         color: '#545454',      // => primary color used for outline and labels
@@ -1521,6 +1523,10 @@ Flotr.Graph = Class.create({
     var radius = (Math.min(this.canvasWidth, this.canvasHeight) * series.pie.sizeRatio) / 2;
     var html = [];
     
+    
+    var vScale = Math.cos(series.pie.viewAngle);
+    var plotTickness = Math.sin(series.pie.viewAngle)*series.pie.spliceThickness / vScale;
+    
     var style = {
       size: options.fontSize*1.2,
       color: options.grid.color,
@@ -1569,8 +1575,165 @@ Flotr.Graph = Class.create({
 	    slices.each(function (slice) {
         var bisection = (slice.startAngle + slice.endAngle) / 2;
         
-        var xOffset = center.x + Math.cos(bisection) * slice.explode + sw/2;
-        var yOffset = center.y + Math.sin(bisection) * slice.explode + sw/2;
+        var xOffset = center.x + Math.cos(bisection) * slice.explode + sw;
+        var yOffset = center.y + Math.sin(bisection) * slice.explode + sw;
+        
+        this.plotSlice(xOffset, yOffset, radius, slice.startAngle, slice.endAngle, false/*, vScale*/);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fill();
+      }, this);
+    }
+    
+    if (options.HtmlText) {
+      html = ['<div style="color:' + this.options.grid.color + '" class="flotr-labels">'];
+    }
+    
+    slices.each(function (slice, index) {
+      var bisection = (slice.startAngle + slice.endAngle) / 2;
+      var color = this.options.colors[index];
+      
+      var xOffset = center.x + Math.cos(bisection) * slice.explode;
+      var yOffset = center.y + Math.sin(bisection) * slice.explode;
+      
+      this.plotSlice(xOffset, yOffset, radius, slice.startAngle, slice.endAngle, false/*, vScale*/);
+      
+      if(series.pie.fill){
+        ctx.fillStyle = Flotr.parseColor(color).scale(null, null, null, series.pie.fillOpacity).toString();
+        ctx.fill();
+      }
+      ctx.lineWidth = lw;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+      
+      /*ctx.save();
+      ctx.scale(1, vScale);
+      
+      ctx.moveTo(xOffset, yOffset);
+      ctx.beginPath();
+      ctx.lineTo(xOffset, yOffset+plotTickness);
+      ctx.lineTo(xOffset+Math.cos(slice.startAngle)*radius, yOffset+Math.sin(slice.startAngle)*radius+plotTickness);
+      ctx.lineTo(xOffset+Math.cos(slice.startAngle)*radius, yOffset+Math.sin(slice.startAngle)*radius);
+      ctx.lineTo(xOffset, yOffset);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.moveTo(xOffset, yOffset);
+      ctx.beginPath();
+      ctx.lineTo(xOffset, yOffset+plotTickness);
+      ctx.lineTo(xOffset+Math.cos(slice.endAngle)*radius, yOffset+Math.sin(slice.endAngle)*radius+plotTickness);
+      ctx.lineTo(xOffset+Math.cos(slice.endAngle)*radius, yOffset+Math.sin(slice.endAngle)*radius);
+      ctx.lineTo(xOffset, yOffset);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.moveTo(xOffset+Math.cos(slice.startAngle)*radius, yOffset+Math.sin(slice.startAngle)*radius);
+      ctx.beginPath();
+      ctx.lineTo(xOffset+Math.cos(slice.startAngle)*radius, yOffset+Math.sin(slice.startAngle)*radius+plotTickness);
+      ctx.arc(xOffset, yOffset+plotTickness, radius, slice.startAngle, slice.endAngle, false);
+      ctx.lineTo(xOffset+Math.cos(slice.endAngle)*radius, yOffset+Math.sin(slice.endAngle)*radius);
+      ctx.arc(xOffset, yOffset, radius, slice.endAngle, slice.startAngle, true);
+      ctx.closePath();
+      ctx.fill();*/
+      
+      ctx.restore();
+      
+      var label = slice.name;
+      if (this.options.pie.labelFormatter != null)
+        label = this.options.pie.labelFormatter(slice);
+      
+      var textAlignRight = (Math.cos(bisection) < 0);
+      if (options.HtmlText) {
+        var divStyle = 'position:absolute;top:' + (yOffset + Math.sin(bisection) * (series.pie.explode + radius) - 5) + 'px;'; //@todo: change
+        if (textAlignRight) {
+          divStyle += 'right:'+ (this.canvasWidth - (xOffset + Math.cos(bisection) * (series.pie.explode + radius)))+'px;text-align:right;';
+        }
+        else {
+          divStyle += 'left:'+ (xOffset + Math.cos(bisection) * (series.pie.explode + radius))+'px;text-align:left;';
+        }
+        html.push('<div style="' + divStyle + '" class="flotr-grid-label">' + label + '</div>');
+      }
+      else {
+        ctx[textAlignRight?'drawTextRight':'drawText'](
+          label, 
+          xOffset + Math.cos(bisection) * (series.pie.explode + radius), 
+          yOffset + Math.sin(bisection) * (series.pie.explode + radius) + style.size / 2, 
+          style
+        );
+      }
+    }, this);
+
+    if (options.HtmlText) {
+      html.push('</div>');    
+      this.el.insert(html.join(''));
+    }
+    
+    ctx.restore();
+    this.options.pie.drawn = true;
+    }
+  },
+  drawSeriesPie3D: function(series) {
+    if (!this.options.pie.drawn) {
+    var ctx = this.ctx,
+      xaxis = this.xaxis,
+      yaxis = this.yaxis;
+    var options = this.options;
+    var lw = series.pie.lineWidth;
+    var sw = series.shadowSize;
+    var data = series.data;
+    var radius = (Math.min(this.canvasWidth, this.canvasHeight) * series.pie.sizeRatio) / 2;
+    var html = [];
+    
+    var style = {
+      size: options.fontSize*1.2,
+      color: options.grid.color,
+      weight: 1.5
+    };
+    
+    var center = {
+      x: (this.canvasWidth+this.plotOffset.left)/2,
+      y: (this.canvasHeight-this.plotOffset.bottom)/2
+    };
+    
+    // Pie portions
+    var portions = this.series.collect(function(hash, index){
+    	if (hash.pie.show)
+      return {
+        name: (hash.label || hash.data[0][1]),
+        value: [index, hash.data[0][1]],
+        explode: hash.pie.explode
+      };
+    });
+    
+    // Sum of the portions' angles
+    var sum = portions.pluck('value').pluck(1).inject(0, function(acc, n) { return acc + n; });
+    
+    var fraction = 0.0;
+    var angle = series.pie.startAngle;
+    var slices = portions.collect(function(slice){
+      angle += fraction;
+      if(slice.value[1] > 0){
+        fraction = slice.value[1]/sum;
+        return {
+          name:     slice.name,
+          fraction: fraction,
+          x:        slice.value[0],
+          y:        slice.value[1],
+          explode:  slice.explode,
+          startAngle: 2 * angle * Math.PI,
+          endAngle:   2 * (angle + fraction) * Math.PI
+        };
+      }
+    });
+    
+    ctx.save();
+
+    if(sw > 0){
+	    slices.each(function (slice) {
+        var bisection = (slice.startAngle + slice.endAngle) / 2;
+        
+        var xOffset = center.x + Math.cos(bisection) * slice.explode + sw;
+        var yOffset = center.y + Math.sin(bisection) * slice.explode + sw;
         
         this.plotSlice(xOffset, yOffset, radius, slice.startAngle, slice.endAngle, false);
 
@@ -1635,13 +1798,18 @@ Flotr.Graph = Class.create({
     this.options.pie.drawn = true;
     }
   },
-  plotSlice: function(x, y, radius, startAngle, endAngle, fill) {
+  plotSlice: function(x, y, radius, startAngle, endAngle, fill, vScale) {
     var ctx = this.ctx;
+    vScale = vScale || 1;
+    
+    ctx.save();
+    ctx.scale(1, vScale);
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.arc   (x, y, radius, startAngle, endAngle, fill);
     ctx.lineTo(x, y);
     ctx.closePath();
+    ctx.restore();
   },
 	/**
 	 * Function: insertLegend
