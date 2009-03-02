@@ -1,0 +1,22 @@
+#summary Flotr Frequently Asked Questions
+
+*When I draw a graph with a point series, the points have no border when viewing with IE.*
+ Make sure you include the Excanvas javascript file that comes with Flotr. This file includes a fix.
+
+*Does Flotr support negative values?*
+ Yes, it does. There’s an example of a graph with negative values.
+
+*My graphs with filled lines and bars look distorted in Opera 9.5-, why?*
+ I’m not sure why, but it doesn’t occur in Opera 9.50 beta1, so just be patient and wait for Opera 9.5+.
+
+*Which browsers are supported?*
+ Firefox 2+, Safari 3+, Opera 9+ and IE6+.
+
+*I found a bug, what can I do?*
+ Don’t panic. First thing you do is try to fix it. Then, go to the Flotr Google Project page, and file a bug in the issue tracker.
+
+*Do you give support for Flotr?*
+ I distribute Flotr ‘as is’, I don not get paid for it and therefore I have no time to do support for it and I won’t answer trivial questions.
+
+*My question’s still not answered, how do I contact you?*
+ I do not guarantee any support. But you could try to contact me by either using the contact form on my contact page, or leave a comment on this page.
