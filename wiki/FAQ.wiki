@@ -1,4 +1,5 @@
 #summary Flotr Frequently Asked Questions
+#labels Featured
 
 *When I draw a graph with a point series, the points have no border when viewing with IE.*
  Make sure you include the Excanvas javascript file that comes with Flotr. This file includes a fix.
