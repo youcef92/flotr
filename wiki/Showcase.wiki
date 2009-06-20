@@ -4,3 +4,5 @@
 Here is a list of projects that use Flotr. If your project is one of them, please tell us in the comments below.
 
  * [http://www.mediboard.org Mediboard] 
+ * [http://code.google.com/p/jsflot/ JSFlot]
+ * [http://ebox-platform.com/ eBox Platform]
