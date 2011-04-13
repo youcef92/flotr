@@ -9,3 +9,4 @@ Here is a list of projects that use Flotr. If your project is one of them, pleas
  * [http://www.cvrepublic.com/cv-stats/1o.html CVRepublic]
  * [http://www.dacolt.com Dacolt] visualization of CFD (Computational Fluid Dynamics) simulations (online [http://dacolt.com/demo/ignition-simulations-dacolt-psr demo 1], [http://dacolt.solide-ict.nl/demo/ignition-delays-dacolt-psr demo 2])
  * [http://www.the-scrum.org theSCRUM] sprint backlog [http://www.the-scrum.org/discover/sprint-backlog/ burn down chart]
+ * [http://humblesoftware.com/finance/index HumbleFinance Charts]
