@@ -1,0 +1,19 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Flotr update and overhaul.  All this work is on the flotr2 branch.
+
+  * Source Structure
+  * Component Separation
+  * Library Agnostic
+  * Touch Events
+  * Build
+
+== Source Structure ==
+
+Break all of the modules, types and plugins into separate files.
+
+== Library Agnostic ==
+
+Remove dependence on large external frameworks, initially replacing with micro-frameworks.  The two current versions (Prototype and MooTools) will become one version.  This eliminates flotr's dependency on the older Prototype library, allows using flotr with any or no framework, and makes it more attractive for mobile platforms.
