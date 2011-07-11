@@ -19,6 +19,33 @@ Break all of the modules, types and plugins into separate files.  Factor out Gra
 
 Individual files will make all of the further refactoring and maintenance easier.  Moving GraphType specific methods into their respective classes will makes the architecture more cohesive and makes adding new types easier.  Removing numerous GraphType interdependencies will reduce coupling as well as the flotr footpri nt when certain types are unused.
 
+=== Components ===
+
+*plugins*
+
+  * Existing spreadsheet plugin.
+  * Make legend into a plugin.
+
+*graph types*
+
+  * bars
+  * bubbles
+  * candles
+  * gantt
+  * lines
+  * markers
+  * pie
+  * points
+  * radar
+
+*classes / objects*
+
+  * Flotr
+  * Flotr.defaultOptions
+  * Flotr.Color
+  * Flotr.Date
+  * Flotr.Graph
+
 == Library Agnostic ==
 
 Remove dependence on large external frameworks, initially replacing with micro-frameworks.  The two current versions (Prototype and MooTools) will become one version.  This eliminates flotr's dependency on the older Prototype library, allows using flotr with any or no framework, and makes it more attractive for mobile platforms.
