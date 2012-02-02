@@ -1,5 +1,7 @@
 #summary Major updates and changes.
 
+*Flotr2* *released*: [http://www.humblesoftware.com/flotr2/]
+
 = Introduction =
 
 Flotr update and overhaul.  All this work is on the flotr2 branch.
